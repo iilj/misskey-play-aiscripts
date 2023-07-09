@@ -1,0 +1,116 @@
+/// @ 0.13.3
+// Go to Heaven
+
+// 回答
+var user_input = ""
+
+@pad(num) {
+    if num <= 9 {
+        num = `0{num}`
+    }
+    num
+}
+
+// 問題文を表示
+@init() {
+    user_input = ""
+    Ui:render([
+        Ui:C:container({
+            align: 'left'
+            children: [
+                Ui:C:text({ text: "Go to Heaven", size: 3, bold: true })
+                Ui:C:mfm({ text: "<small>配点: $[font.math 100] 点</small>" })
+                Ui:C:text({ text: "この問題はあなたが普段いかに徳を積んできたかを確かめる問題です。" })
+                Ui:C:mfm({ text: "$[font.math 1] 行に `Judgement` とだけ出力し、最後に改行してください。すると、 $[font.math 1/2] の確率で :AC: が得られます。(この抽選は提出ごとに独立に行われます。)" })
+                Ui:C:text({ text: "入力", size: 2, bold: true })
+                Ui:C:text({ text: "この問題では入力は与えられない。" })
+                Ui:C:text({ text: "出力", size: 2, bold: true })
+                Ui:C:text({ text: "指示通り出力して下さい。偉大なる神はあなたの行いを全てご覧になり、その結果を業という形であなたに授けることに注意してください。" })
+                Ui:C:text({ text: "出典", size: 2, bold: true })
+                Ui:C:mfm({ text: "[J - Go to Heaven](https://atcoder.jp/contests/iroha2019-day3/tasks/iroha2019_day3_j)" })
+                Ui:C:select({
+                    items: [
+                        {text: "Text", value: "Text"}
+                    ]
+                    default: "Text"
+                    label: "言語"
+                })
+                Ui:C:textarea({
+                    onInput: @(text){ user_input = text }
+                    label: "ソースコード"
+                    caption: "※ 512 KiB まで（嘘）"
+                })
+                Ui:C:button({
+                    onClick: judge
+                    text: "提出"
+                    primary: true
+                })
+            ]
+        })
+    ])
+}
+
+// ジャッジ結果を表示
+@judge() {
+    let expected = `Judgement`
+    let actual = user_input.trim()
+    if actual == "" {
+        // 問題に戻す
+        Ui:render([
+            Ui:C:container({
+                align: 'left'
+                children: [
+                    Ui:C:mfm({ text: "$[bg.color=f2dede $[fg.color=a94442 ⚠️ ソースコードが空です]]" })
+                    Ui:C:button({
+                        onClick: init
+                        text: "問題へ戻る"
+                    })
+                ]
+            })
+        ])
+    } else {
+        let random = Math:gen_rng(`{USER_ID}{Date:year()}{Date:month()}{Date:day()}{Date:hour()}{Date:minute()}{Date:second()}`)
+        let r = random(0 1)
+        let accepted = ((expected == actual) && (r == 1))
+        let score =
+            if accepted { 100 }
+            else { 0 }
+        let label =
+            if accepted { ":AC:" }
+            else { ":WA:" }
+        let results = [
+            `**提出日時**: {Date:year()}-{pad(Date:month())}-{pad(Date:day())} {pad(Date:hour())}:{pad(Date:minute())}:{pad(Date:second())}`
+            `**問題**: [Go to Heaven]({THIS_URL})`
+            `**言語**: Text`
+            `**得点**: {score}`
+            `**結果**: {label}`
+        ]
+        let share_text = `{results.join(Str:lf)}{Str:lf}{THIS_URL}`
+
+        Ui:render([
+            Ui:C:container({
+                align: 'left'
+                children: [
+                    Ui:C:text({ text: "提出情報", size: 2, bold: true })
+                    Ui:C:mfm({ text: results[0] })
+                    Ui:C:mfm({ text: results[1] })
+                    Ui:C:mfm({ text: results[2] })
+                    Ui:C:mfm({ text: results[3] })
+                    Ui:C:mfm({ text: results[4] })
+                    Ui:C:postFormButton({
+                        text: "結果を共有"
+                        primary: true
+                        form: { text: share_text }
+                    })
+                    Ui:C:button({
+                        onClick: init
+                        text: "問題へ戻る"
+                    })
+                ]
+            })
+        ])
+    }
+}
+
+// エントリポイント
+init()
