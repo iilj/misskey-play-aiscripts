@@ -1,0 +1,802 @@
+/// @ 0.13.3
+// A+B Problem (Brainfuck Only)
+
+// 数値を2桁フォーマットする（時刻表示用）
+@pad(num) {
+    if num <= 9 {
+        num = `0{num}`
+    }
+    num
+}
+
+let str2num_obj = {}
+Obj:set(str2num_obj Str:lf 10)
+Obj:set(str2num_obj " " 32)
+Obj:set(str2num_obj "!" 33)
+Obj:set(str2num_obj "\"" 34)
+Obj:set(str2num_obj "#" 35)
+Obj:set(str2num_obj "$" 36)
+Obj:set(str2num_obj "%" 37)
+Obj:set(str2num_obj "&" 38)
+Obj:set(str2num_obj "'" 39)
+Obj:set(str2num_obj "(" 40)
+Obj:set(str2num_obj ")" 41)
+Obj:set(str2num_obj "*" 42)
+Obj:set(str2num_obj "+" 43)
+Obj:set(str2num_obj "," 44)
+Obj:set(str2num_obj "-" 45)
+Obj:set(str2num_obj "." 46)
+Obj:set(str2num_obj "/" 47)
+Obj:set(str2num_obj "0" 48)
+Obj:set(str2num_obj "1" 49)
+Obj:set(str2num_obj "2" 50)
+Obj:set(str2num_obj "3" 51)
+Obj:set(str2num_obj "4" 52)
+Obj:set(str2num_obj "5" 53)
+Obj:set(str2num_obj "6" 54)
+Obj:set(str2num_obj "7" 55)
+Obj:set(str2num_obj "8" 56)
+Obj:set(str2num_obj "9" 57)
+Obj:set(str2num_obj ":" 58)
+Obj:set(str2num_obj ";" 59)
+Obj:set(str2num_obj "<" 60)
+Obj:set(str2num_obj "=" 61)
+Obj:set(str2num_obj ">" 62)
+Obj:set(str2num_obj "?" 63)
+Obj:set(str2num_obj "@" 64)
+Obj:set(str2num_obj "A" 65)
+Obj:set(str2num_obj "B" 66)
+Obj:set(str2num_obj "C" 67)
+Obj:set(str2num_obj "D" 68)
+Obj:set(str2num_obj "E" 69)
+Obj:set(str2num_obj "F" 70)
+Obj:set(str2num_obj "G" 71)
+Obj:set(str2num_obj "H" 72)
+Obj:set(str2num_obj "I" 73)
+Obj:set(str2num_obj "J" 74)
+Obj:set(str2num_obj "K" 75)
+Obj:set(str2num_obj "L" 76)
+Obj:set(str2num_obj "M" 77)
+Obj:set(str2num_obj "N" 78)
+Obj:set(str2num_obj "O" 79)
+Obj:set(str2num_obj "P" 80)
+Obj:set(str2num_obj "Q" 81)
+Obj:set(str2num_obj "R" 82)
+Obj:set(str2num_obj "S" 83)
+Obj:set(str2num_obj "T" 84)
+Obj:set(str2num_obj "U" 85)
+Obj:set(str2num_obj "V" 86)
+Obj:set(str2num_obj "W" 87)
+Obj:set(str2num_obj "X" 88)
+Obj:set(str2num_obj "Y" 89)
+Obj:set(str2num_obj "Z" 90)
+Obj:set(str2num_obj "[" 91)
+// Obj:set(str2num `\\` 92)
+Obj:set(str2num_obj "]" 93)
+Obj:set(str2num_obj "^" 94)
+Obj:set(str2num_obj "_" 95)
+Obj:set(str2num_obj "`" 96)
+Obj:set(str2num_obj "a" 97)
+Obj:set(str2num_obj "b" 98)
+Obj:set(str2num_obj "c" 99)
+Obj:set(str2num_obj "d" 100)
+Obj:set(str2num_obj "e" 101)
+Obj:set(str2num_obj "f" 102)
+Obj:set(str2num_obj "g" 103)
+Obj:set(str2num_obj "h" 104)
+Obj:set(str2num_obj "i" 105)
+Obj:set(str2num_obj "j" 106)
+Obj:set(str2num_obj "k" 107)
+Obj:set(str2num_obj "l" 108)
+Obj:set(str2num_obj "m" 109)
+Obj:set(str2num_obj "n" 110)
+Obj:set(str2num_obj "o" 111)
+Obj:set(str2num_obj "p" 112)
+Obj:set(str2num_obj "q" 113)
+Obj:set(str2num_obj "r" 114)
+Obj:set(str2num_obj "s" 115)
+Obj:set(str2num_obj "t" 116)
+Obj:set(str2num_obj "u" 117)
+Obj:set(str2num_obj "v" 118)
+Obj:set(str2num_obj "w" 119)
+Obj:set(str2num_obj "x" 120)
+Obj:set(str2num_obj "y" 121)
+Obj:set(str2num_obj "z" 122)
+Obj:set(str2num_obj "{" 123)
+Obj:set(str2num_obj "|" 124)
+Obj:set(str2num_obj "}" 125)
+Obj:set(str2num_obj "~" 126)
+@str2num(val: str) {
+    if (val == null) {
+        return 255
+    } elif (Obj:has(str2num_obj val)) {
+        let num = Obj:get(str2num_obj val)
+        return num
+    } else {
+        return 255
+    }
+}
+
+// 32-126
+let ar_num2str = [
+    " "
+    "!"
+    "\""
+    "#"
+    "$"
+    "%"
+    "&"
+    "'"
+    "("
+    ")"
+    "*"
+    "+"
+    ","
+    "-"
+    "."
+    "/"
+    "0"
+    "1"
+    "2"
+    "3"
+    "4"
+    "5"
+    "6"
+    "7"
+    "8"
+    "9"
+    ":"
+    ";"
+    "<"
+    "="
+    ">"
+    "?"
+    "@"
+    "A"
+    "B"
+    "C"
+    "D"
+    "E"
+    "F"
+    "G"
+    "H"
+    "I"
+    "J"
+    "K"
+    "L"
+    "M"
+    "N"
+    "O"
+    "P"
+    "Q"
+    "R"
+    "S"
+    "T"
+    "U"
+    "V"
+    "W"
+    "X"
+    "Y"
+    "Z"
+    "["
+    "□"
+    "]"
+    "^"
+    "_"
+    "`"
+    "a"
+    "b"
+    "c"
+    "d"
+    "e"
+    "f"
+    "g"
+    "h"
+    "i"
+    "j"
+    "k"
+    "l"
+    "m"
+    "n"
+    "o"
+    "p"
+    "q"
+    "r"
+    "s"
+    "t"
+    "u"
+    "v"
+    "w"
+    "x"
+    "y"
+    "z"
+    "{"
+    "|"
+    "}"
+    "~"
+]
+@num2str(val: num) {
+    if (val == 10) {
+        Str:lf
+    } elif (val >= 32 && val <= 126) {
+        ar_num2str[val - 32]
+    } else {
+        "□"
+    }
+}
+
+let JUDGE_STATUS_TO_INDEX = {
+    WJ: 0
+    AC: 1
+    WA: 2
+    TLE: 3
+    MLE: 4
+    OLE: 5
+    QLE: 6
+    RE: 7
+    CE: 8
+    IE: 9
+}
+
+// ソースコード
+var user_input_src = ""
+
+// ソースコードを実行
+@exec_brainfuck(src: str, stdin_: str, memory_bytes: num, timelimit_ms: num, max_output_bytes: num) {
+    var elapsed_ms = 0
+    let interval_ms = 100
+    let stop_timer = Async:interval(interval_ms, @(){
+        elapsed_ms = (elapsed_ms + interval_ms)
+    })
+
+    let memory: arr<num> = []
+    var memory_pointer = 0
+    var max_memory_pointer_written = -1
+    // stdin_ 内のポインタ
+    var stdin_pointer = 0
+    // src 内のポインタ
+    var program_counter = 0
+    let output: arr<str> = []
+    var status = "WJ"
+
+    // メモリ初期化
+    for (memory_bytes) {
+        memory.push(0)
+    }
+
+    for (let step, 10000) {
+        // 81 までOK
+        if (program_counter >= src.len) {
+            break
+        }
+        let program_counter_bak = program_counter
+        let stdin_pointer_bak = stdin_pointer
+
+        let ch = src.pick(program_counter)
+        if (ch == ">") {
+            // 1. ポインタをインクリメントする。ポインタをptrとすると、C言語の「ptr++;」に相当する。
+            memory_pointer = (memory_pointer + 1)
+        } elif (ch == "<") {
+            // 2. ポインタをデクリメントする。C言語の「ptr--;」に相当。
+            memory_pointer = (memory_pointer - 1)
+        } elif (ch == "+") {
+            // 3. ポインタが指す値をインクリメントする。C言語の「(*ptr)++;」に相当。
+            if (memory_pointer >= memory_bytes) {
+                status = "MLE"
+                max_memory_pointer_written = memory_pointer
+                break
+            }
+            if (memory_pointer < 0) {
+                status = "RE"
+                break
+            }
+            memory[memory_pointer] =  memory[memory_pointer] + 1
+            if (memory[memory_pointer] > 255) {
+                memory[memory_pointer] = 0
+            }
+            if (memory_pointer > max_memory_pointer_written) {
+                max_memory_pointer_written = memory_pointer
+            }
+        } elif (ch == "-") {
+            // 4. ポインタが指す値をデクリメントする。C言語の「(*ptr)--;」に相当。
+            if (memory_pointer >= memory_bytes) {
+                status = "MLE"
+                max_memory_pointer_written = memory_pointer
+                break
+            }
+            if (memory_pointer < 0) {
+                status = "RE"
+                break
+            }
+            memory[memory_pointer] =  memory[memory_pointer] - 1
+            if (memory[memory_pointer] < 0) {
+                memory[memory_pointer] = 255
+            }
+            if (memory_pointer > max_memory_pointer_written) {
+                max_memory_pointer_written = memory_pointer
+            }
+        } elif (ch == ".") {
+            // 5. ポインタが指す値を出力に書き出す。C言語の「putchar(*ptr);」に相当。
+            output.push(num2str(memory[memory_pointer]))
+        } elif (ch == ",") {
+            // 6. 入力から1バイト読み込んで、ポインタが指す先に代入する。C言語の「*ptr=getchar();」に相当。
+            if (memory_pointer >= memory_bytes) {
+                status = "MLE"
+                max_memory_pointer_written = memory_pointer
+                break
+            }
+            if (memory_pointer < 0) {
+                status = "RE"
+                break
+            }
+            memory[memory_pointer] = str2num(stdin_.pick(stdin_pointer))
+            stdin_pointer = (stdin_pointer + 1)
+            if (memory_pointer > max_memory_pointer_written) {
+                max_memory_pointer_written = memory_pointer
+            }
+        } elif (ch == "[") {
+            // 7. ポインタが指す値が0なら、対応する ] の直後にジャンプする。C言語の「while(*ptr){」に相当。
+            if (memory_pointer < 0 || memory_pointer >= memory_bytes) {
+                status = "RE"
+                break
+            }
+            if (memory[memory_pointer] == 0) {
+                let count = 1
+                program_counter = (program_counter + 1)
+                loop {
+                    if (count == 0) {
+                        break
+                    }
+                    let ch_tmp = src.pick(program_counter)
+                    if (ch_tmp == "[") {
+                        count = (count + 1)
+                    } elif (ch_tmp == "]") {
+                        count = (count - 1)
+                    }
+                    program_counter = (program_counter + 1)
+                }
+                program_counter = (program_counter - 1)
+            }
+        } elif (ch == "]") {
+            // 8. ポインタが指す値が0でないなら、対応する [ （の直後）にジャンプする。C言語の「}」に相当。
+            if (memory_pointer < 0 || memory_pointer >= memory_bytes) {
+                status = "RE"
+                break
+            }
+            if (memory[memory_pointer] != 0) {
+                let count = 1
+                program_counter = (program_counter - 1)
+                loop {
+                    if (count == 0) {
+                        break
+                    }
+                    let ch_tmp = src.pick(program_counter)
+                    if (ch_tmp == "[") {
+                        count = (count - 1)
+                    } elif (ch_tmp == "]") {
+                        count = (count + 1)
+                    }
+                    program_counter = (program_counter - 1)
+                }
+                program_counter = (program_counter + 1)
+            }
+        }
+        program_counter = (program_counter + 1)
+
+        if (elapsed_ms > timelimit_ms) {
+            status = "TLE"
+            break
+        }
+        if (output.len > max_output_bytes) {
+            status = "OLE"
+            break
+        }
+    }
+    // program_counter
+    stop_timer()
+    if (elapsed_ms > timelimit_ms) {
+        status = "TLE"
+    }
+
+    return {
+        status: status
+        elapsed_ms: elapsed_ms
+        output: output.join()
+        memory_used: (max_memory_pointer_written + 1)
+    }
+}
+
+let HBAR = "──────────────────────────────────"
+// Four-Per-Em Space
+let SP = " "
+let BULLET = "•"
+
+// ジャッジ時のパラメータ
+// 実行時間制限
+let TIMELIMIT_SEC = 5
+// メモリ制限
+let MEMORY_BYTES = 16
+// 出力長制限
+let MAX_OUTPUT_BYTES = 16
+
+let PROBLEM_TITLE = "A+B Problem"
+
+// メイン UI を表示
+@init() {
+    Ui:render([
+        Ui:C:container({
+            align: 'left'
+            children: [
+                Ui:C:text({ text: PROBLEM_TITLE, size: 3, bold: true })
+                Ui:C:mfm({ text: `<small>実行時間制限: {TIMELIMIT_SEC} sec / メモリ制限: {MEMORY_BYTES} Bytes / 出力長制限: {MAX_OUTPUT_BYTES} Bytes</small>` })
+                Ui:C:mfm({ text: "<small>配点: $[font.math 100] 点</small>" })
+                Ui:C:text({ text: "問題文", size: 2, bold: true })
+                Ui:C:mfm({ text: `$[font.math <i>A</i>{SP}+{SP}<i>B</i>]{SP}を求めよ．` })
+                Ui:C:text({ text: "制約", size: 2, bold: true })
+                Ui:C:mfm({ text: ` {BULLET} $[font.math 0{SP}≤{SP}<i>A</i>{SP}≤{SP}9]` })
+                Ui:C:mfm({ text: ` {BULLET} $[font.math 0{SP}≤{SP}<i>B</i>{SP}≤{SP}9]` })
+                Ui:C:mfm({ text: ` {BULLET} $[font.math 0{SP}≤{SP}<i>A</i>{SP}+{SP}<i>B</i>{SP}≤{SP}9]` })
+                Ui:C:text({ text: HBAR, color: '#eee' })
+                Ui:C:text({ text: "入力", size: 2, bold: true })
+                Ui:C:text({ text: "入力は以下の形式で標準入力から与えられる．入力の末尾には改行（LF）が必ず付けられている．" })
+                Ui:C:container({
+                    children: [Ui:C:mfm({ text: "$[font.math <i>A</i> <i>B</i>]" })]
+                    bgColor: '#f5f5f5'
+                    padding: 8
+                    rounded: true
+                })
+                Ui:C:text({ text: "出力", size: 2, bold: true })
+                Ui:C:mfm({ text: `$[font.math <i>A</i>{SP}+{SP}<i>B</i>]{SP}の計算結果を1行に出力せよ．なお，出力の末尾の改行（LF）は付けても付けなくてもよい．` })
+                Ui:C:text({ text: HBAR, color: '#eee' })
+                Ui:C:text({ text: "入力例1", size: 2, bold: true })
+                Ui:C:container({
+                    children: [Ui:C:mfm({ text: "$[font.math 1 2]" })]
+                    bgColor: '#f5f5f5'
+                    padding: 8
+                    rounded: true
+                })
+                Ui:C:text({ text: "出力例1", size: 2, bold: true })
+                Ui:C:container({
+                    children: [Ui:C:mfm({ text: "$[font.math 3]" })]
+                    bgColor: '#f5f5f5'
+                    padding: 8
+                    rounded: true
+                })
+                Ui:C:text({ text: HBAR, color: '#eee' })
+                Ui:C:select({
+                    items: [
+                        {text: "Brainfuck", value: "Brainfuck"}
+                    ]
+                    default: "Brainfuck"
+                    label: "言語"
+                })
+                Ui:C:textarea({
+                    onInput: @(text){ user_input_src = text }
+                    default: user_input_src
+                    label: "ソースコード"
+                    caption: "※ +-><.,[] 以外の文字は無視します．"
+                })
+                Ui:C:button({
+                    onClick: judge
+                    text: "提出"
+                    primary: true
+                })
+                Ui:C:button({
+                    onClick: show_editorial
+                    text: "解説"
+                })
+            ]
+        })
+    ])
+}
+
+// ソースコードから想定外の文字を除去する
+@get_clean_src() {
+    let ar = []
+    for (let i, user_input_src.len) {
+        let ch = user_input_src.pick(i)
+        if (ch == "+" || ch == "-" || ch == ">" || ch == "<" || ch == "." || ch == "," || ch == "[" || ch == "]") {
+            ar.push(ch)
+        }
+    }
+    return ar.join()
+}
+
+// ジャッジする
+@judge() {
+    let clean_src = get_clean_src()
+    if (clean_src == "") {
+        // 問題に戻す
+        Ui:render([
+            Ui:C:container({
+                align: 'left'
+                children: [
+                    Ui:C:container({
+                        bgColor: '#f2dede'
+                        fgColor: '#a94442'
+                        padding: 8
+                        rounded: true
+                        children: [
+                            Ui:C:text({ text: "⚠️ ソースコードが空です" })
+                        ]
+                    })
+                    Ui:C:button({
+                        onClick: init
+                        text: "問題へ戻る"
+                    })
+                ]
+            })
+        ])
+    } else {
+        let datetime = `{Date:year()}-{pad(Date:month())}-{pad(Date:day())} {pad(Date:hour())}:{pad(Date:minute())}:{pad(Date:second())}`
+        var score = "-"
+        var status = "WJ"
+
+        let case_names = ["sample1" "hand1" "hand2" "hand3" "hand4" "hand5"]
+        let inputs = [`1 2{Str:lf}` `0 0{Str:lf}` `9 0{Str:lf}` `0 9{Str:lf}` `4 5{Str:lf}` `6 2{Str:lf}`]
+        let expecteds = ["3" "0" "9" "9" "9" "8"]
+        let results = []
+
+        let dots = "..."
+
+        Ui:render([
+            Ui:C:container({
+                align: 'left'
+                children: [
+                    Ui:C:text({ text: "提出結果", size: 3, bold: true })
+                    Ui:C:text({ text: "ソースコード", size: 2, bold: true })
+                    Ui:C:textarea({
+                        default: user_input_src
+                    })
+                    Ui:C:text({ text: HBAR, color: '#eee' })
+                    Ui:C:text({ text: "提出情報", size: 2, bold: true })
+                    Ui:C:container({
+                        bgColor: '#fcfcfc'
+                        padding: 10
+                        children: [
+                            Ui:C:mfm({ text: `**提出日時**: {datetime}` })
+                            Ui:C:mfm({ text: `**問題**: [{PROBLEM_TITLE}]({THIS_URL})` })
+                            Ui:C:mfm({ text: `**言語**: Brainfuck` })
+                            Ui:C:mfm({ text: `**得点**: {score}` } `element_score_{datetime}`)
+                            Ui:C:mfm({ text: `**コード長**: {user_input_src.len} 文字` })
+                            Ui:C:mfm({ text: `**結果**: :{status}: (0/{inputs.len}) {dots}` } `element_status_{datetime}`)
+                            Ui:C:mfm({ text: `**実行時間**: -` })
+                            Ui:C:mfm({ text: `**メモリ**: -` })
+                        ]
+                    })
+                    Ui:C:text({ text: HBAR, color: '#eee' })
+                    Ui:C:button({
+                        onClick: init
+                        text: "問題へ戻る"
+                    })
+                ]
+            })
+        ])
+
+        let max_i = 0
+        let stop_timer = Async:interval(250, @(){
+            if (dots.len == 0) {
+                dots = "."
+            } elif (dots.len == 1) {
+                dots = ".."
+            } elif (dots.len == 2) {
+                dots = "..."
+            } elif (dots.len == 3) {
+                dots = ""
+            }
+            Ui:get(`element_status_{datetime}`).update({ text: `**結果**: :{status}: ({max_i}/{inputs.len}) {dots}` })
+        })
+
+        var max_elapsed_ms = 0
+        var max_memory_used = 0
+        var max_judge_status_index = 0
+        for (let i, inputs.len) {
+            max_i = i
+
+            let case_input = inputs[i]
+            let case_expected = expecteds[i]
+            let case_result = exec_brainfuck(clean_src, case_input, MEMORY_BYTES, TIMELIMIT_SEC * 1000, MAX_OUTPUT_BYTES)
+            results.push(case_result)
+
+            // case_expected との一致判定
+            if (Obj:get(case_result "status") == "WJ") {
+                let output = Obj:get(case_result "output").trim()
+                if (output == case_expected) {
+                    Obj:set(case_result "status" "AC")
+                } else {
+                    Obj:set(case_result "status" "WA")
+                }
+            }
+
+            // 実行中のエラー判定
+            let case_status = Obj:get(case_result "status")
+            if (case_status != "AC") {
+                score = "0"
+                Ui:get(`element_score_{datetime}`).update({ text: `**得点**: {score}` })
+                let judge_status_index = Obj:get(JUDGE_STATUS_TO_INDEX case_status)
+                if (judge_status_index > max_judge_status_index) {
+                    max_judge_status_index = judge_status_index
+                    status = case_status
+                }
+            }
+            let ii = (i + 1)
+            Ui:get(`element_status_{datetime}`).update({ text: `**結果**: :{status}: ({ii}/{inputs.len}) {dots}` })
+
+            // 提出の全体情報の更新
+            let case_elapsed_ms = Obj:get(case_result "elapsed_ms")
+            if (case_elapsed_ms > max_elapsed_ms) {
+                max_elapsed_ms = case_elapsed_ms
+            }
+            let case_memory_used = Obj:get(case_result "memory_used")
+            if (case_memory_used > max_memory_used) {
+                max_memory_used = case_memory_used
+            }
+        }
+        stop_timer()
+
+        if (status == "WJ") {
+            status = "AC"
+            score = "100"
+        }
+
+        let share_text_elements = [
+            `**提出日時**: {datetime}`
+            `**問題**: [{PROBLEM_TITLE}]({THIS_URL})`
+            `**言語**: Brainfuck`
+            `**得点**: {score}`
+            `**コード長**: {user_input_src.len} 文字`
+            `**結果**: :{status}`
+            `**実行時間**: {max_elapsed_ms} ms`
+            `**メモリ**: {max_memory_used} Bytes`
+        ]
+        let share_text = `【{PROBLEM_TITLE}】{Str:lf}{share_text_elements.join(Str:lf)}{Str:lf}{THIS_URL}`
+
+        let children = [
+            Ui:C:text({ text: "提出結果", size: 3, bold: true })
+            Ui:C:text({ text: "ソースコード", size: 2, bold: true })
+            Ui:C:textarea({
+                default: user_input_src
+            })
+            Ui:C:text({ text: HBAR, color: '#eee' })
+            Ui:C:text({ text: "提出情報", size: 2, bold: true })
+            Ui:C:container({
+                bgColor: '#fcfcfc'
+                padding: 10
+                children: [
+                    Ui:C:mfm({ text: share_text_elements[0] })
+                    Ui:C:mfm({ text: share_text_elements[1] })
+                    Ui:C:mfm({ text: share_text_elements[2] })
+                    Ui:C:mfm({ text: share_text_elements[3] })
+                    Ui:C:mfm({ text: share_text_elements[4] })
+                    Ui:C:mfm({ text: share_text_elements[5] })
+                    Ui:C:mfm({ text: share_text_elements[6] })
+                    Ui:C:mfm({ text: share_text_elements[7] })
+                ]
+            })
+            Ui:C:text({ text: HBAR, color: '#eee' })
+            Ui:C:text({ text: "ジャッジ結果", size: 2, bold: true })
+        ]
+        let judge_result_children = [
+            Ui:C:mfm({ text: `**ケース名** / **結果** / **実行時間** / **メモリ**` })
+        ]
+        for (let i, inputs.len) {
+            let case_name = case_names[i]
+            let case_result = results[i]
+            var case_status = Obj:get(case_result "status")
+            let case_elapsed_ms = Obj:get(case_result "elapsed_ms")
+            let case_memory_used = Obj:get(case_result "memory_used")
+            let element = Ui:C:mfm({ text: `{case_name} / :{case_status}: / {case_elapsed_ms} ms / {case_memory_used} Bytes` })
+            judge_result_children.push(element)
+        }
+        children.push(
+            Ui:C:container({
+                bgColor: '#fcfcfc'
+                padding: 10
+                children: judge_result_children
+            })
+        )
+
+        children.push(Ui:C:text({ text: HBAR, color: '#eee' }))
+        children.push(Ui:C:postFormButton({
+            text: "結果を共有"
+            primary: true
+            form: { text: share_text }
+        }))
+        children.push(Ui:C:button({
+            onClick: init
+            text: "問題へ戻る"
+        }))
+        children.push(Ui:C:button({
+            onClick: show_editorial
+            text: "解説"
+        }))
+
+        Ui:render([
+            Ui:C:container({
+                align: 'left'
+                children: children
+            })
+        ])
+    }
+}
+
+let ans0 = [
+    "```"
+    "// A の入力（48 を引く）"
+    ",>++++++[-<-------->]"
+    "// 空白の入力"
+    ","
+    "// B の入力（48 を引く）"
+    ",>++++++[-<-------->]"
+    "// A＋B の計算"
+    "<[-<+>]"
+    "// 結果の出力（48 を引いてから出力）"
+    "++++++[-<++++++++>]<."
+    "```"
+]
+let ans1 = [
+    "```"
+    "// A の入力"
+    ",>"
+    "// 空白の入力"
+    ","
+    "// B の入力（48 を引く）"
+    ",>++++++[-<-------->]"
+    "// A＋B の計算"
+    "<[-<+>]"
+    "// 結果の出力"
+    "<."
+    "```"
+]
+let ans2 = [
+    "```"
+    "// A の入力"
+    ",>"
+    "// 空白の入力"
+    ","
+    "// B の入力（48 を引く）"
+    ",------------------------------------------------"
+    "// A＋B の計算"
+    "[-<+>]"
+    "// 結果の出力"
+    "<."
+    "```"
+]
+
+
+@show_editorial() {
+    Ui:render([
+        Ui:C:container({
+            align: 'left'
+            children: [
+                Ui:C:mfm({ text: `[{PROBLEM_TITLE}]({THIS_URL}) 解説 <small>by @iilj</small>`, size: 3, bold: true })
+                Ui:C:mfm({ text: "$[font.math A] の入力", size: 2, bold: true })
+                Ui:C:mfm({ text: "Brainfuck では `,` で入力から1バイト読み込んで，メモリに格納できます．何もしない状態だとメモリの $[font.math 0] 番地に格納されます．" })
+                Ui:C:mfm({ text: "$[font.math '0' == (char)48] なので，メモリ上に格納した ASCII コードを元の整数にするためには $[font.math 48] を引く必要があります．これは，$[font.math 8] を引く操作を $[font.math 6] 回繰り返すことで実現できます． `>++++++` でメモリの $[font.math 1] 番地を $[font.math 6] にします． `[-<-------->]` で，$[font.math 1] 番地の値が $[font.math 0] になるまで，$[font.math 1] 番地から $[font.math 1] を，$[font.math 0] 番地から $[font.math 8] を引きます．" })
+                Ui:C:mfm({ text: "なお，$[font.math 8] を引く操作は， $[font.math 48] 回のデクリメントを直接記述することでも実現できます．`------------------------------------------------>` と書けばよいです．" })
+                Ui:C:mfm({ text: "空白の入力", size: 2, bold: true })
+                Ui:C:mfm({ text: "`,` で入力から1バイト読み込んで，メモリの $[font.math 1] 番地に格納します．しかし，この値は後に上書きされます．" })
+                Ui:C:mfm({ text: "$[font.math B] の入力", size: 2, bold: true })
+                Ui:C:mfm({ text: "$[font.math A] と同様にして，`,>++++++[-<-------->]` でメモリの $[font.math 1] 番地に $[font.math B] の値が格納されます．" })
+                Ui:C:mfm({ text: "$[font.math A+B] の計算", size: 2, bold: true })
+                Ui:C:mfm({ text: "まず `<` でメモリの $[font.math 1] 番地に移動します．その後， `[-<+>]` で $[font.math 1] 番地の値が $[font.math 0] になるまで，$[font.math 1] 番地をデクリメントして $[font.math 0] 番地をインクリメントします．" })
+                Ui:C:mfm({ text: "結果の出力", size: 2, bold: true })
+                Ui:C:mfm({ text: "メモリ上には計算結果がそのまま格納されているので， ASCII コードに直すために $[font.math 48] を足す必要があります．入力したときとは逆に，`++++++[-<++++++++>]` で $[font.math 8] を足す操作を $[font.math 6] 回繰り返すことで実現できます．最後に `<.` で $[font.math 0] 番地の ASCII コードを文字として出力します．" })
+                Ui:C:mfm({ text: "ソースコード", size: 2, bold: true })
+                Ui:C:mfm({ text: "以下に，Brainfuck 言語による正解例を記載します．" })
+                Ui:C:mfm({ text: ans0.join(Str:lf) })
+                Ui:C:mfm({ text: "また，上記ソースコードは $[font.math 48] を $[font.math 2] 回引いて $[font.math 1] 回足す操作を行っています．これは， $[font.math 48] を $[font.math 1] 回だけ引く操作に置き換えられます．このことを利用して，下記ソースコードのように記述することもできます．" })
+                Ui:C:mfm({ text: ans1.join(Str:lf) })
+                Ui:C:mfm({ text: "$[font.math 48] を引く部分は，ループを使わずに記述できます．ループを展開したためコードは長くなりますが，実行時間は短くなります．" })
+                Ui:C:mfm({ text: ans2.join(Str:lf) })
+                Ui:C:button({
+                    onClick: init
+                    text: "問題へ戻る"
+                })
+            ]
+        })
+    ])
+}
+
+// エントリポイント
+init()
