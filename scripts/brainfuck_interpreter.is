@@ -1,0 +1,628 @@
+/// @ 0.13.3
+### {
+	name: "Brainfuck Interpreter"
+	version: "1.0.0"
+	author: "@iilj@misskey.kyoupro.com"
+	description: "Brainfuck のインタプリタを AiScript で実装したものです．"
+	permissions: []
+	config: {}
+}
+
+// メモリをダンプする
+@num2hex(value: num) {
+    if (value < 16) {
+        let label = Num:to_hex(value)
+        return `0{label}`
+    } else {
+        return Num:to_hex(value)
+    }
+}
+@dump_memory(value: arr<num>, memory_pointer: num) {
+    let ar = []
+    for (let i, value.len) {
+        var v = num2hex(value[i])
+        if (i == memory_pointer) {
+            let u = `$[bg.color=00f $[fg.color=fff {v}]]`
+            ar.push(u)
+        } else {
+            ar.push(v)
+        }
+    }
+    let s = ar.join(" ")
+    return s
+}
+
+let str2num_obj = {}
+Obj:set(str2num_obj Str:lf 10)
+Obj:set(str2num_obj " " 32)
+Obj:set(str2num_obj "!" 33)
+Obj:set(str2num_obj "\"" 34)
+Obj:set(str2num_obj "#" 35)
+Obj:set(str2num_obj "$" 36)
+Obj:set(str2num_obj "%" 37)
+Obj:set(str2num_obj "&" 38)
+Obj:set(str2num_obj "'" 39)
+Obj:set(str2num_obj "(" 40)
+Obj:set(str2num_obj ")" 41)
+Obj:set(str2num_obj "*" 42)
+Obj:set(str2num_obj "+" 43)
+Obj:set(str2num_obj "," 44)
+Obj:set(str2num_obj "-" 45)
+Obj:set(str2num_obj "." 46)
+Obj:set(str2num_obj "/" 47)
+Obj:set(str2num_obj "0" 48)
+Obj:set(str2num_obj "1" 49)
+Obj:set(str2num_obj "2" 50)
+Obj:set(str2num_obj "3" 51)
+Obj:set(str2num_obj "4" 52)
+Obj:set(str2num_obj "5" 53)
+Obj:set(str2num_obj "6" 54)
+Obj:set(str2num_obj "7" 55)
+Obj:set(str2num_obj "8" 56)
+Obj:set(str2num_obj "9" 57)
+Obj:set(str2num_obj ":" 58)
+Obj:set(str2num_obj ";" 59)
+Obj:set(str2num_obj "<" 60)
+Obj:set(str2num_obj "=" 61)
+Obj:set(str2num_obj ">" 62)
+Obj:set(str2num_obj "?" 63)
+Obj:set(str2num_obj "@" 64)
+Obj:set(str2num_obj "A" 65)
+Obj:set(str2num_obj "B" 66)
+Obj:set(str2num_obj "C" 67)
+Obj:set(str2num_obj "D" 68)
+Obj:set(str2num_obj "E" 69)
+Obj:set(str2num_obj "F" 70)
+Obj:set(str2num_obj "G" 71)
+Obj:set(str2num_obj "H" 72)
+Obj:set(str2num_obj "I" 73)
+Obj:set(str2num_obj "J" 74)
+Obj:set(str2num_obj "K" 75)
+Obj:set(str2num_obj "L" 76)
+Obj:set(str2num_obj "M" 77)
+Obj:set(str2num_obj "N" 78)
+Obj:set(str2num_obj "O" 79)
+Obj:set(str2num_obj "P" 80)
+Obj:set(str2num_obj "Q" 81)
+Obj:set(str2num_obj "R" 82)
+Obj:set(str2num_obj "S" 83)
+Obj:set(str2num_obj "T" 84)
+Obj:set(str2num_obj "U" 85)
+Obj:set(str2num_obj "V" 86)
+Obj:set(str2num_obj "W" 87)
+Obj:set(str2num_obj "X" 88)
+Obj:set(str2num_obj "Y" 89)
+Obj:set(str2num_obj "Z" 90)
+Obj:set(str2num_obj "[" 91)
+// Obj:set(str2num `\\` 92)
+Obj:set(str2num_obj "]" 93)
+Obj:set(str2num_obj "^" 94)
+Obj:set(str2num_obj "_" 95)
+Obj:set(str2num_obj "`" 96)
+Obj:set(str2num_obj "a" 97)
+Obj:set(str2num_obj "b" 98)
+Obj:set(str2num_obj "c" 99)
+Obj:set(str2num_obj "d" 100)
+Obj:set(str2num_obj "e" 101)
+Obj:set(str2num_obj "f" 102)
+Obj:set(str2num_obj "g" 103)
+Obj:set(str2num_obj "h" 104)
+Obj:set(str2num_obj "i" 105)
+Obj:set(str2num_obj "j" 106)
+Obj:set(str2num_obj "k" 107)
+Obj:set(str2num_obj "l" 108)
+Obj:set(str2num_obj "m" 109)
+Obj:set(str2num_obj "n" 110)
+Obj:set(str2num_obj "o" 111)
+Obj:set(str2num_obj "p" 112)
+Obj:set(str2num_obj "q" 113)
+Obj:set(str2num_obj "r" 114)
+Obj:set(str2num_obj "s" 115)
+Obj:set(str2num_obj "t" 116)
+Obj:set(str2num_obj "u" 117)
+Obj:set(str2num_obj "v" 118)
+Obj:set(str2num_obj "w" 119)
+Obj:set(str2num_obj "x" 120)
+Obj:set(str2num_obj "y" 121)
+Obj:set(str2num_obj "z" 122)
+Obj:set(str2num_obj "{" 123)
+Obj:set(str2num_obj "|" 124)
+Obj:set(str2num_obj "}" 125)
+Obj:set(str2num_obj "~" 126)
+@str2num(val: str) {
+    if (val == null) {
+        return 255
+    } elif (Obj:has(str2num_obj val)) {
+        let num = Obj:get(str2num_obj val)
+        return num
+    } else {
+        return 255
+    }
+}
+
+// 32-126
+let ar_num2str = [
+    " "
+    "!"
+    "\""
+    "#"
+    "$"
+    "%"
+    "&"
+    "'"
+    "("
+    ")"
+    "*"
+    "+"
+    ","
+    "-"
+    "."
+    "/"
+    "0"
+    "1"
+    "2"
+    "3"
+    "4"
+    "5"
+    "6"
+    "7"
+    "8"
+    "9"
+    ":"
+    ";"
+    "<"
+    "="
+    ">"
+    "?"
+    "@"
+    "A"
+    "B"
+    "C"
+    "D"
+    "E"
+    "F"
+    "G"
+    "H"
+    "I"
+    "J"
+    "K"
+    "L"
+    "M"
+    "N"
+    "O"
+    "P"
+    "Q"
+    "R"
+    "S"
+    "T"
+    "U"
+    "V"
+    "W"
+    "X"
+    "Y"
+    "Z"
+    "["
+    "□"
+    "]"
+    "^"
+    "_"
+    "`"
+    "a"
+    "b"
+    "c"
+    "d"
+    "e"
+    "f"
+    "g"
+    "h"
+    "i"
+    "j"
+    "k"
+    "l"
+    "m"
+    "n"
+    "o"
+    "p"
+    "q"
+    "r"
+    "s"
+    "t"
+    "u"
+    "v"
+    "w"
+    "x"
+    "y"
+    "z"
+    "{"
+    "|"
+    "}"
+    "~"
+]
+@num2str(val: num) {
+    if (val == 10) {
+        "[LF]"
+    } elif (val >= 32 && val <= 126) {
+        ar_num2str[val - 32]
+    } else {
+        "□"
+    }
+}
+
+// ソースコード
+var user_input_src = ""
+// 入力
+var user_input_stdin = ""
+
+// ゼロ幅スペース（改行位置ずれ防止用）
+let zwsp = "​"
+// no-break space（入力末尾用）
+let nbsp = " "
+// 配列 ar から，指定されたインデックスをハイライトした MFM 文字列を作成する
+@join_highlight_index(ar: arr<num>, idx: num) {
+    let is_fst = (idx == 0)
+    let is_lst = (idx == (ar.len - 1))
+    let prefix = if (is_fst) {
+        ""
+    } else {
+        "</plain>"
+    }
+    let whole_prefix = if (is_fst) {
+        ""
+    } else {
+        "<plain>"
+    }
+    let suffix = if (is_lst) {
+        ""
+    } else {
+        "<plain>"
+    }
+    let whole_suffix = if (is_lst) {
+        ""
+    } else {
+        "</plain>"
+    }
+    var bak = ""
+    if (idx < ar.len) {
+        bak = ar[idx]
+        ar[idx] = `{prefix}$[bg.color=00f $[fg.color=fff <plain>{bak}</plain>]]{suffix}`
+    }
+    var ret = ar.join(zwsp)
+    ret = `{whole_prefix}{ret}{whole_suffix}`
+    if (idx < ar.len) {
+        ar[idx] = bak
+    }
+    return ret
+}
+
+// メモリ上限（Bytes）
+var memory_bytes = 16
+// 出力長上限（Bytes）
+var max_output_bytes = 16
+// 実行時間制限（ms）
+var timelimit_ms = 40000
+
+// ソースコードを実行
+@exec_brainfuck(src: str, stdin_: str) {
+    var elapsed_ms = 0
+    let interval_ms = 100
+    let stop_timer = Async:interval(interval_ms, @(){
+        elapsed_ms = (elapsed_ms + interval_ms)
+    })
+
+    let memory: arr<num> = []
+    var memory_pointer = 0
+    var max_memory_pointer_written = -1
+    // stdin_ 内のポインタ
+    var stdin_pointer = 0
+    // src 内のポインタ
+    var program_counter = 0
+    let output: arr<str> = []
+    var status = "WJ"
+
+    // メモリ初期化
+    for (memory_bytes) {
+        memory.push(0)
+    }
+
+    // 命令ステート表示用
+    let src_display_arr: arr<str> = []
+    for (let i, src.len) {
+        let ch = src.pick(i)
+        src_display_arr.push(ch)
+    }
+
+    // 入力ステート表示用
+    let stdin_display_arr: arr<str> = []
+    for (let i, stdin_.len) {
+        let ch = stdin_.pick(i)
+        if (ch == Str:lf) {
+            stdin_display_arr.push("[LF]")
+        } else {
+            stdin_display_arr.push(ch)
+        }
+    }
+    stdin_display_arr.push(nbsp)
+
+    for (let step, 10000) {
+        // 81 までOK
+        if (program_counter >= src.len) {
+            break
+        }
+        let program_counter_bak = program_counter
+        let stdin_pointer_bak = stdin_pointer
+
+        let ch = src.pick(program_counter)
+        if (ch == ">") {
+            // 1. ポインタをインクリメントする。ポインタをptrとすると、C言語の「ptr++;」に相当する。
+            memory_pointer = (memory_pointer + 1)
+        } elif (ch == "<") {
+            // 2. ポインタをデクリメントする。C言語の「ptr--;」に相当。
+            memory_pointer = (memory_pointer - 1)
+        } elif (ch == "+") {
+            // 3. ポインタが指す値をインクリメントする。C言語の「(*ptr)++;」に相当。
+            if (memory_pointer >= memory_bytes) {
+                status = "MLE"
+                max_memory_pointer_written = memory_pointer
+                break
+            }
+            if (memory_pointer < 0) {
+                status = "RE"
+                break
+            }
+            memory[memory_pointer] =  memory[memory_pointer] + 1
+            if (memory[memory_pointer] > 255) {
+                memory[memory_pointer] = 0
+            }
+            if (memory_pointer > max_memory_pointer_written) {
+                max_memory_pointer_written = memory_pointer
+            }
+        } elif (ch == "-") {
+            // 4. ポインタが指す値をデクリメントする。C言語の「(*ptr)--;」に相当。
+            if (memory_pointer >= memory_bytes) {
+                status = "MLE"
+                max_memory_pointer_written = memory_pointer
+                break
+            }
+            if (memory_pointer < 0) {
+                status = "RE"
+                break
+            }
+            memory[memory_pointer] =  memory[memory_pointer] - 1
+            if (memory[memory_pointer] < 0) {
+                memory[memory_pointer] = 255
+            }
+            if (memory_pointer > max_memory_pointer_written) {
+                max_memory_pointer_written = memory_pointer
+            }
+        } elif (ch == ".") {
+            // 5. ポインタが指す値を出力に書き出す。C言語の「putchar(*ptr);」に相当。
+            output.push(num2str(memory[memory_pointer]))
+        } elif (ch == ",") {
+            // 6. 入力から1バイト読み込んで、ポインタが指す先に代入する。C言語の「*ptr=getchar();」に相当。
+            if (memory_pointer >= memory_bytes) {
+                status = "MLE"
+                max_memory_pointer_written = memory_pointer
+                break
+            }
+            if (memory_pointer < 0) {
+                status = "RE"
+                break
+            }
+            memory[memory_pointer] = str2num(stdin_.pick(stdin_pointer))
+            stdin_pointer = (stdin_pointer + 1)
+            if (memory_pointer > max_memory_pointer_written) {
+                max_memory_pointer_written = memory_pointer
+            }
+        } elif (ch == "[") {
+            // 7. ポインタが指す値が0なら、対応する ] の直後にジャンプする。C言語の「while(*ptr){」に相当。
+            if (memory_pointer < 0 || memory_pointer >= memory_bytes) {
+                status = "RE"
+                break
+            }
+            if (memory[memory_pointer] == 0) {
+                let count = 1
+                program_counter = (program_counter + 1)
+                loop {
+                    if (count == 0) {
+                        break
+                    }
+                    let ch_tmp = src.pick(program_counter)
+                    if (ch_tmp == "[") {
+                        count = (count + 1)
+                    } elif (ch_tmp == "]") {
+                        count = (count - 1)
+                    }
+                    program_counter = (program_counter + 1)
+                }
+                program_counter = (program_counter - 1)
+            }
+        } elif (ch == "]") {
+            // 8. ポインタが指す値が0でないなら、対応する [ （の直後）にジャンプする。C言語の「}」に相当。
+            if (memory_pointer < 0 || memory_pointer >= memory_bytes) {
+                status = "RE"
+                break
+            }
+            if (memory[memory_pointer] != 0) {
+                let count = 1
+                program_counter = (program_counter - 1)
+                loop {
+                    if (count == 0) {
+                        break
+                    }
+                    let ch_tmp = src.pick(program_counter)
+                    if (ch_tmp == "[") {
+                        count = (count - 1)
+                    } elif (ch_tmp == "]") {
+                        count = (count + 1)
+                    }
+                    program_counter = (program_counter - 1)
+                }
+                program_counter = (program_counter + 1)
+            }
+        }
+        program_counter = (program_counter + 1)
+
+        // 表示用の命令ステートを用意
+        let src_display = join_highlight_index(src_display_arr, program_counter_bak)
+
+        // 表示用のメモリを用意
+        let memory_str = dump_memory(memory, memory_pointer)
+
+        // 表示用の入力を用意
+        let stdin_display = join_highlight_index(stdin_display_arr, stdin_pointer_bak)
+
+        // 表示用の出力を用意
+        var output_joined = output.join()
+        if (output_joined.len == 0) {
+            output_joined = "(ここに出力を表示します)"
+        }
+        let output_len = output.len
+
+        let memory_used = (max_memory_pointer_written + 1)
+        Ui:get("instruction_state_title").update({ text: `**■命令ステート**（命令数: $[font.monospace {src.len}], ステップ数: $[font.monospace {step}], 命令カウンタ: $[font.monospace {program_counter_bak}]）` })
+        Ui:get("instruction_state").update({ text: `$[bg.color=eee $[font.monospace {src_display}]]` })
+        Ui:get("memory_state_title").update({ text: `**■メモリ**（使用量: $[font.monospace {memory_used}] bytes）` })
+        Ui:get("memory_state").update({ text: `$[bg.color=eee $[font.monospace {memory_str}]]` })
+        Ui:get("input_state_title").update({ text: `**■入力**（$[font.monospace {stdin_.len}] bytes，ポインタ: {stdin_pointer_bak}）` })
+        Ui:get("input_state").update({ text: `$[bg.color=eee $[font.monospace {stdin_display}]]` })
+        Ui:get("output_state_title").update({ text: `**■出力**（$[font.monospace {output_len}] bytes）` })
+        Ui:get("output_state").update({ text: `$[bg.color=eee $[font.monospace <plain>{output_joined}</plain>]]` })
+        Ui:get("time_elapsed_title").update({ text: `**■ステータス**:（状態: :{status}:, 実行時間: $[font.monospace {elapsed_ms}] ms）` })
+
+        if (elapsed_ms > timelimit_ms) {
+            status = "TLE"
+            break
+        }
+        if (output.len > max_output_bytes) {
+            status = "OLE"
+            break
+        }
+    }
+    // program_counter
+    stop_timer()
+    if (status == "WJ") {
+        if (elapsed_ms > timelimit_ms) {
+            status = "TLE"
+            break
+        } else {
+            status = "AC"
+        }
+    }
+    Ui:get("time_elapsed_title").update({ text: `**■ステータス**:（状態: :{status}:, 実行時間: $[font.monospace {elapsed_ms}] ms）` })
+    output.join()
+}
+
+// メイン UI を表示
+@init() {
+    user_input_src = "+++++++++[>++++++++<-]>.<+++++++++[>+++<-]>++.+++++++..+++.<+++++++++[>-------<-]>----.<+++++++++[>-<-]>---.<+++++++++[>++++++<-]>+.<+++++++++[>++<-]>++++++.+++.------.--------."
+    user_input_stdin = `1 2{Str:lf}`
+    let memory = []
+    for (16) {
+        memory.push(0)
+    }
+    let init_memory_str = dump_memory(memory, -1)
+
+    Ui:render([
+        Ui:C:container({
+            align: 'left'
+            children: [
+                Ui:C:text({ text: "Brainfuck Interpreter", size: 3, bold: true })
+                Ui:C:select({
+                    items: [
+                        {text: "Brainfuck", value: "Brainfuck"}
+                    ]
+                    default: "Brainfuck"
+                    label: "言語"
+                })
+                Ui:C:textarea({
+                    onInput: @(text){ user_input_src = text }
+                    default: user_input_src
+                    label: "ソースコード"
+                    caption: "※ +-><.,[] 以外の文字は無視します．"
+                })
+                Ui:C:textarea({
+                    onInput: @(text){ user_input_stdin = text }
+                    default: user_input_stdin
+                    label: "入力"
+                    caption: "※ 入力が足りない場合は 0xff を入力したとみなします．"
+                })
+                Ui:C:numberInput({
+                    onInput: @(number){ memory_bytes = number }
+                    default: memory_bytes
+                    label: "メモリ上限（Bytes）"
+                    caption: "非負整数を指定してください．"
+                })
+                Ui:C:numberInput({
+                    onInput: @(number){ max_output_bytes = number }
+                    default: max_output_bytes
+                    label: "出力長上限（Bytes）"
+                    caption: "非負整数を指定してください．"
+                })
+                Ui:C:numberInput({
+                    onInput: @(number){ timelimit_ms = number }
+                    default: timelimit_ms
+                    label: "実行時間制限（ms）"
+                    caption: "正整数を指定してください．分解能は 100ms です．"
+                })
+                Ui:C:button({
+                    onClick: exec
+                    text: "実行"
+                    primary: true
+                    disabled: false
+                } "exec_button")
+                Ui:C:mfm({ text: "**■命令ステート**（命令数: $[font.monospace 0], ステップ数: $[font.monospace 0], 命令カウンタ: $[font.monospace 0]）" } "instruction_state_title")
+                Ui:C:mfm({ text: "$[bg.color=eee $[font.monospace (ここにソースを表示します)]]" } "instruction_state")
+                Ui:C:mfm({ text: "**■メモリ**（使用量: $[font.monospace 0] bytes）" } "memory_state_title")
+                Ui:C:mfm({ text: `$[bg.color=eee $[font.monospace {init_memory_str}]]` } "memory_state")
+                Ui:C:mfm({ text: "**■入力**（$[font.monospace 0] bytes，ポインタ: 0）" } "input_state_title")
+                Ui:C:mfm({ text: "$[bg.color=eee $[font.monospace (ここに出力を表示します)]]" } "input_state")
+                Ui:C:mfm({ text: "**■出力**（$[font.monospace 0] bytes）" } "output_state_title")
+                Ui:C:mfm({ text: "$[bg.color=eee $[font.monospace (ここに出力を表示します)]]" } "output_state")
+                Ui:C:mfm({ text: "**■ステータス**:（状態: -, 実行時間: $[font.monospace 0] ms）" } "time_elapsed_title")
+            ]
+        })
+    ])
+}
+
+// ソースコードから想定外の文字を除去する
+@get_clean_src() {
+    let ar = []
+    for (let i, user_input_src.len) {
+        let ch = user_input_src.pick(i)
+        if (ch == "+" || ch == "-" || ch == ">" || ch == "<" || ch == "." || ch == "," || ch == "[" || ch == "]") {
+            ar.push(ch)
+        }
+    }
+    return ar.join()
+}
+
+// 実行する
+@exec() {
+    let clean_src = get_clean_src()
+    if (clean_src.len == 0) {
+        Mk:dialog("情報" "無効なソースコードです．")
+    } elif (memory_bytes < 0) {
+        Mk:dialog("情報" "メモリ上限（Bytes）には非負整数を指定してください．")
+    } elif (max_output_bytes < 0) {
+        Mk:dialog("情報" "出力長上限（Bytes）には非負整数を指定してください．")
+    } elif (timelimit_ms <= 0) {
+        Mk:dialog("情報" "実行時間制限（ms）には正整数を指定してください．")
+    } else {
+        Ui:get("exec_button").update({
+            onClick: exec
+            text: "実行"
+            primary: true
+            disabled: true
+        })
+        let l = exec_brainfuck(clean_src, user_input_stdin)
+        Ui:get("exec_button").update({
+            onClick: exec
+            text: "実行"
+            primary: true
+            disabled: false
+        })
+    }
+}
+
+// エントリポイント
+init()

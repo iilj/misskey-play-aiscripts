@@ -24,5 +24,13 @@ A+Bを求めよ．（Brainfuck 限定，解説付き）
 - Source: [brainfuck_a_plus_b.is](scripts/brainfuck_a_plus_b.is)
 
 
+### Brainfuck Interpreter
+
+Brainfuck のインタプリタを AiScript で実装したものです．
+
+- Play: [Brainfuck Interpreter \| 競プロ鯖](https://misskey.kyoupro.com/play/9h09r32cbn)
+- Source: [brainfuck_interpreter.is](scripts/brainfuck_interpreter.is)
+
+
 -----
 以上
