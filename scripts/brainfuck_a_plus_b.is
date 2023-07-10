@@ -1,5 +1,12 @@
 /// @ 0.13.3
-// A+B Problem (Brainfuck Only)
+### {
+	name: "A+B Problem (Brainfuck Only)"
+	version: "1.0.0"
+	author: "@iilj@misskey.kyoupro.com"
+	description: "A+Bを求めよ．（Brainfuck 限定，解説付き）"
+	permissions: []
+	config: {}
+}
 
 // 数値を2桁フォーマットする（時刻表示用）
 @pad(num) {
@@ -419,7 +426,7 @@ let MEMORY_BYTES = 16
 // 出力長制限
 let MAX_OUTPUT_BYTES = 16
 
-let PROBLEM_TITLE = "A+B Problem"
+let PROBLEM_TITLE = "A+B Problem (Brainfuck Only)"
 
 // メイン UI を表示
 @init() {
@@ -502,6 +509,11 @@ let PROBLEM_TITLE = "A+B Problem"
     return ar.join()
 }
 
+// テストケース
+let TESTCASE_NAMES = ["sample1" "hand1" "hand2" "hand3" "hand4" "hand5" "hand6"]
+let TESTCASE_INPUTS = [`1 2{Str:lf}` `0 0{Str:lf}` `9 0{Str:lf}` `0 9{Str:lf}` `4 5{Str:lf}` `6 2{Str:lf}` `2 3{Str:lf}`]
+let TESTCASE_EXPECTEDS = ["3" "0" "9" "9" "9" "8" "5"]
+
 // ジャッジする
 @judge() {
     let clean_src = get_clean_src()
@@ -532,9 +544,6 @@ let PROBLEM_TITLE = "A+B Problem"
         var score = "-"
         var status = "WJ"
 
-        let case_names = ["sample1" "hand1" "hand2" "hand3" "hand4" "hand5"]
-        let inputs = [`1 2{Str:lf}` `0 0{Str:lf}` `9 0{Str:lf}` `0 9{Str:lf}` `4 5{Str:lf}` `6 2{Str:lf}`]
-        let expecteds = ["3" "0" "9" "9" "9" "8"]
         let results = []
 
         let dots = "..."
@@ -559,7 +568,7 @@ let PROBLEM_TITLE = "A+B Problem"
                             Ui:C:mfm({ text: `**言語**: Brainfuck` })
                             Ui:C:mfm({ text: `**得点**: {score}` } `element_score_{datetime}`)
                             Ui:C:mfm({ text: `**コード長**: {user_input_src.len} 文字` })
-                            Ui:C:mfm({ text: `**結果**: :{status}: (0/{inputs.len}) {dots}` } `element_status_{datetime}`)
+                            Ui:C:mfm({ text: `**結果**: :{status}: (0/{TESTCASE_INPUTS.len}) {dots}` } `element_status_{datetime}`)
                             Ui:C:mfm({ text: `**実行時間**: -` })
                             Ui:C:mfm({ text: `**メモリ**: -` })
                         ]
@@ -584,17 +593,17 @@ let PROBLEM_TITLE = "A+B Problem"
             } elif (dots.len == 3) {
                 dots = ""
             }
-            Ui:get(`element_status_{datetime}`).update({ text: `**結果**: :{status}: ({max_i}/{inputs.len}) {dots}` })
+            Ui:get(`element_status_{datetime}`).update({ text: `**結果**: :{status}: ({max_i}/{TESTCASE_INPUTS.len}) {dots}` })
         })
 
         var max_elapsed_ms = 0
         var max_memory_used = 0
         var max_judge_status_index = 0
-        for (let i, inputs.len) {
+        for (let i, TESTCASE_INPUTS.len) {
             max_i = i
 
-            let case_input = inputs[i]
-            let case_expected = expecteds[i]
+            let case_input = TESTCASE_INPUTS[i]
+            let case_expected = TESTCASE_EXPECTEDS[i]
             let case_result = exec_brainfuck(clean_src, case_input, MEMORY_BYTES, TIMELIMIT_SEC * 1000, MAX_OUTPUT_BYTES)
             results.push(case_result)
 
@@ -620,7 +629,7 @@ let PROBLEM_TITLE = "A+B Problem"
                 }
             }
             let ii = (i + 1)
-            Ui:get(`element_status_{datetime}`).update({ text: `**結果**: :{status}: ({ii}/{inputs.len}) {dots}` })
+            Ui:get(`element_status_{datetime}`).update({ text: `**結果**: :{status}: ({ii}/{TESTCASE_INPUTS.len}) {dots}` })
 
             // 提出の全体情報の更新
             let case_elapsed_ms = Obj:get(case_result "elapsed_ms")
@@ -645,11 +654,11 @@ let PROBLEM_TITLE = "A+B Problem"
             `**言語**: Brainfuck`
             `**得点**: {score}`
             `**コード長**: {user_input_src.len} 文字`
-            `**結果**: :{status}`
+            `**結果**: :{status}:`
             `**実行時間**: {max_elapsed_ms} ms`
             `**メモリ**: {max_memory_used} Bytes`
         ]
-        let share_text = `【{PROBLEM_TITLE}】{Str:lf}{share_text_elements.join(Str:lf)}{Str:lf}{THIS_URL}`
+        let share_text = `{share_text_elements.join(Str:lf)}{Str:lf}{THIS_URL}{Str:lf}#Brainfuck`
 
         let children = [
             Ui:C:text({ text: "提出結果", size: 3, bold: true })
@@ -679,8 +688,8 @@ let PROBLEM_TITLE = "A+B Problem"
         let judge_result_children = [
             Ui:C:mfm({ text: `**ケース名** / **結果** / **実行時間** / **メモリ**` })
         ]
-        for (let i, inputs.len) {
-            let case_name = case_names[i]
+        for (let i, TESTCASE_INPUTS.len) {
+            let case_name = TESTCASE_NAMES[i]
             let case_result = results[i]
             var case_status = Obj:get(case_result "status")
             let case_elapsed_ms = Obj:get(case_result "elapsed_ms")
@@ -723,6 +732,20 @@ let PROBLEM_TITLE = "A+B Problem"
 let ans0 = [
     "```"
     "// A の入力（48 を引く）"
+    ",------------------------------------------------>"
+    "// 空白の入力"
+    ","
+    "// B の入力（48 を引く）"
+    ",------------------------------------------------"
+    "// A＋B の計算"
+    "[-<+>]<"
+    "// 結果の出力（48 を足してから出力）"
+    "++++++++++++++++++++++++++++++++++++++++++++++++."
+    "```"
+]
+let ans1 = [
+    "```"
+    "// A の入力（48 を引く）"
     ",>++++++[-<-------->]"
     "// 空白の入力"
     ","
@@ -730,11 +753,11 @@ let ans0 = [
     ",>++++++[-<-------->]"
     "// A＋B の計算"
     "<[-<+>]"
-    "// 結果の出力（48 を引いてから出力）"
+    "// 結果の出力（48 を足してから出力）"
     "++++++[-<++++++++>]<."
     "```"
 ]
-let ans1 = [
+let ans2 = [
     "```"
     "// A の入力"
     ",>"
@@ -748,7 +771,7 @@ let ans1 = [
     "<."
     "```"
 ]
-let ans2 = [
+let ans3 = [
     "```"
     "// A の入力"
     ",>"
@@ -764,31 +787,58 @@ let ans2 = [
 ]
 
 
+// 解説を表示する
 @show_editorial() {
     Ui:render([
         Ui:C:container({
             align: 'left'
             children: [
                 Ui:C:mfm({ text: `[{PROBLEM_TITLE}]({THIS_URL}) 解説 <small>by @iilj</small>`, size: 3, bold: true })
-                Ui:C:mfm({ text: "$[font.math A] の入力", size: 2, bold: true })
-                Ui:C:mfm({ text: "Brainfuck では `,` で入力から1バイト読み込んで，メモリに格納できます．何もしない状態だとメモリの $[font.math 0] 番地に格納されます．" })
-                Ui:C:mfm({ text: "$[font.math '0' == (char)48] なので，メモリ上に格納した ASCII コードを元の整数にするためには $[font.math 48] を引く必要があります．これは，$[font.math 8] を引く操作を $[font.math 6] 回繰り返すことで実現できます． `>++++++` でメモリの $[font.math 1] 番地を $[font.math 6] にします． `[-<-------->]` で，$[font.math 1] 番地の値が $[font.math 0] になるまで，$[font.math 1] 番地から $[font.math 1] を，$[font.math 0] 番地から $[font.math 8] を引きます．" })
-                Ui:C:mfm({ text: "なお，$[font.math 8] を引く操作は， $[font.math 48] 回のデクリメントを直接記述することでも実現できます．`------------------------------------------------>` と書けばよいです．" })
-                Ui:C:mfm({ text: "空白の入力", size: 2, bold: true })
-                Ui:C:mfm({ text: "`,` で入力から1バイト読み込んで，メモリの $[font.math 1] 番地に格納します．しかし，この値は後に上書きされます．" })
-                Ui:C:mfm({ text: "$[font.math B] の入力", size: 2, bold: true })
-                Ui:C:mfm({ text: "$[font.math A] と同様にして，`,>++++++[-<-------->]` でメモリの $[font.math 1] 番地に $[font.math B] の値が格納されます．" })
-                Ui:C:mfm({ text: "$[font.math A+B] の計算", size: 2, bold: true })
-                Ui:C:mfm({ text: "まず `<` でメモリの $[font.math 1] 番地に移動します．その後， `[-<+>]` で $[font.math 1] 番地の値が $[font.math 0] になるまで，$[font.math 1] 番地をデクリメントして $[font.math 0] 番地をインクリメントします．" })
-                Ui:C:mfm({ text: "結果の出力", size: 2, bold: true })
-                Ui:C:mfm({ text: "メモリ上には計算結果がそのまま格納されているので， ASCII コードに直すために $[font.math 48] を足す必要があります．入力したときとは逆に，`++++++[-<++++++++>]` で $[font.math 8] を足す操作を $[font.math 6] 回繰り返すことで実現できます．最後に `<.` で $[font.math 0] 番地の ASCII コードを文字として出力します．" })
-                Ui:C:mfm({ text: "ソースコード", size: 2, bold: true })
-                Ui:C:mfm({ text: "以下に，Brainfuck 言語による正解例を記載します．" })
+                Ui:C:mfm({ text: "基本解法", size: 2, bold: true })
+                Ui:C:mfm({ text: "$[font.math <i>A</i>] の入力", size: 1.5, bold: true })
+                Ui:C:mfm({ text: "Brainfuck では `,` で入力から $[font.math 1] バイト読み込んで，メモリに格納できます．何もしない状態だとメモリの $[font.math 0] 番地に格納されます．" })
+                Ui:C:mfm({ text: "$[font.monospace '0' == (char)48] なので，メモリ上に格納した ASCII コードを元の整数にするためには $[font.math 48] を引く必要があります．Brainfuck では `-` でポインタが指す値をデクリメントできます．したがって `------------------------------------------------` と書けばよいです．" })
+                Ui:C:mfm({ text: "次の入力に備えて，メモリの $[font.math 1] 番地へ移動します．Brainfuck では `>` でポインタをインクリメントできます．" })
+
+                Ui:C:mfm({ text: "空白の入力", size: 1.5, bold: true })
+                Ui:C:mfm({ text: "`,` で入力から1バイト読み込んで，メモリの $[font.math 1] 番地に格納します．しかし，この値は後に上書きされます．" })
+
+                Ui:C:mfm({ text: "$[font.math <i>B</i>] の入力", size: 1.5, bold: true })
+                Ui:C:mfm({ text: "$[font.math <i>A</i>] と同様にして， `,------------------------------------------------` でメモリの $[font.math 1] 番地に $[font.math <i>B</i>] の値が格納されます．" })
+
+                Ui:C:mfm({ text: "$[font.math <i>A</i> + <i>B</i>] の計算", size: 1.5, bold: true })
+                Ui:C:mfm({ text: "Brainfuck では `[]` を使うことで C 言語の `while(*ptr){}` 相当のループを実現できます．また `<` でポインタをデクリメントでき， `+` でポインタが指す値をインクリメントできます．このことを利用して，メモリの $[font.math 1] 番地の値が $[font.math 0] になるまで， $[font.math 1] 番地をデクリメントして $[font.math 0] 番地をインクリメントすることを繰り返します．したがって `[-<+>]` と書けばよいです．結果はメモリの $[font.math 0] 番地に入っています．" })
+                Ui:C:mfm({ text: "出力に備えて， `<` でメモリの $[font.math 0] 番地へ移動します．" })
+
+                Ui:C:mfm({ text: "結果の出力", size: 1.5, bold: true })
+                Ui:C:mfm({ text: "メモリ上には計算結果がそのまま格納されているので， ASCII コードに直すために $[font.math 48] を足す必要があります． `++++++++++++++++++++++++++++++++++++++++++++++++` と書けばよいです．" })
+                Ui:C:mfm({ text: "Brainfuck では `.` でポインタが指す値を ASCII コードとみなして文字として出力に書き出すことができます．" })
+
+                Ui:C:mfm({ text: "ソースコード", size: 1.5, bold: true })
+                Ui:C:mfm({ text: "以下に， Brainfuck 言語による正解例を記載します．" })
                 Ui:C:mfm({ text: ans0.join(Str:lf) })
-                Ui:C:mfm({ text: "また，上記ソースコードは $[font.math 48] を $[font.math 2] 回引いて $[font.math 1] 回足す操作を行っています．これは， $[font.math 48] を $[font.math 1] 回だけ引く操作に置き換えられます．このことを利用して，下記ソースコードのように記述することもできます．" })
+
+                Ui:C:mfm({ text: "発展", size: 2, bold: true })
+                Ui:C:mfm({ text: "$[font.math 48] を足す/引く 操作は， $[font.math 8] を足す/引く操作を $[font.math 6] 回繰り返すことでも実現できます．メモリを $[font.math 1] バイト余分に使って，そこをカウンタとして使うことを考えます．" })
+                Ui:C:mfm({ text: "$[font.math 48] を引く操作を例に考えます． `++++++` でカウンタを $[font.math 6] に設定し， `[-<-------->]` で，カウンタが $[font.math 0] になるまで，カウンタから $[font.math 1] を，カウンタの直前の番地から $[font.math 8] を，それぞれ引きます．" })
+                Ui:C:mfm({ text: "上記の工夫により，以下のように，より短いソースコードで :AC: できます．" })
                 Ui:C:mfm({ text: ans1.join(Str:lf) })
-                Ui:C:mfm({ text: "$[font.math 48] を引く部分は，ループを使わずに記述できます．ループを展開したためコードは長くなりますが，実行時間は短くなります．" })
+
+                Ui:C:mfm({ text: "また，上記ソースコードは $[font.math 48] を引く操作を $[font.math 2] 回， $[font.math 48] を足す操作を $[font.math 1] 回，それぞれ行っています．これは， $[font.math 48] を $[font.math 1] 回だけ引く操作に置き換えられます．" })
+                Ui:C:mfm({ text: "このことを利用して，以下のように，さらに短いソースコードで :AC: できます．" })
                 Ui:C:mfm({ text: ans2.join(Str:lf) })
+                Ui:C:mfm({ text: "$[font.math 48] を引く部分は，ループを使わずに記述できます．ループを展開するとコードは長くなりますが，実行時間は短くなります．以下が実装例です．" })
+                Ui:C:mfm({ text: ans3.join(Str:lf) })
+                Ui:C:mfm({ text: "他にどんな書き方ができるか，考えてみましょう．" })
+
+                Ui:C:mfm({ text: "拡張", size: 2, bold: true })
+                Ui:C:mfm({ text: "制約を下記のように変更した問題を考えてみましょう．" })
+                Ui:C:mfm({ text: ` {BULLET} $[font.math 0{SP}≤{SP}<i>A</i>{SP}≤{SP}10]` })
+                Ui:C:mfm({ text: ` {BULLET} $[font.math 0{SP}≤{SP}<i>B</i>{SP}≤{SP}10]` })
+                Ui:C:mfm({ text: ` {BULLET} $[font.math 0{SP}≤{SP}<i>A</i>{SP}+{SP}<i>B</i>{SP}≤{SP}20]` })
+                Ui:C:mfm({ text: "以下のページに実装例があります．" })
+                Ui:C:mfm({ text: ` {BULLET} [PKU JudgeOnlineのProblem 1000をBrainf*ckで解いてみた - ぬいぐるみライフ？](https://mickey24.hatenablog.com/entry/20110303/poj_by_brainfuck)` })
+
                 Ui:C:button({
                     onClick: init
                     text: "問題へ戻る"

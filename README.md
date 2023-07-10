@@ -3,7 +3,7 @@ misskey-play-aiscripts
 
 ## 概要
 
-Misskey Play（例：[Play \| Misskey\.io](https://misskey.io/play)）のソースコード置き場．
+Misskey Play（例：[Play \| Misskey\.io](https://misskey.io/play)）に投稿したソースコードの置き場．
 
 
 ## Play 一覧
@@ -14,6 +14,14 @@ Misskey Play（例：[Play \| Misskey\.io](https://misskey.io/play)）のソー�
 
 - Play: [Go to Heaven \| 競プロ鯖](https://misskey.kyoupro.com/play/9gtc1nbp34)
 - Source: [go_to_heaven.is](scripts/go_to_heaven.is)
+
+
+### A+B Problem (Brainfuck Only)
+
+A+Bを求めよ．（Brainfuck 限定，解説付き）
+
+- Play: [A\+B Problem \(Brainfuck Only\) \| 競プロ鯖](https://misskey.kyoupro.com/play/9h096nwn8c)
+- Source: [brainfuck_a_plus_b.is](scripts/brainfuck_a_plus_b.is)
 
 
 -----
